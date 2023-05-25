@@ -8,11 +8,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Layout',
+      title: 'Navigation',
       theme: ThemeData(
         primarySwatch: Colors.lightBlue,
       ),
       home: HomePage(),
+      routes: {
+        InfoPage.routeName: (context) =>
+        const InfoPage(),
+      },
     );
   }
 }
@@ -22,22 +26,21 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Layout'),
+        title: Text('Home'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-            decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search,
+        TextFormField(
+        decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search,
           color: Colors.grey,
           size: 26,
-            ),
-
+        ),
         )
-            ),
+        ),
             SizedBox(height: 16.0),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,6 +72,20 @@ class HomePage extends StatelessWidget {
                 ),
               ],
               onPressedViewComments: () {
+                Navigator.pushNamed(context,
+                    InfoPage.routeName,
+                    arguments: InfoArguments('', [
+                      Comment(
+                        avatarUrl: '' ,
+                          name: 'Alexa',
+                          comment: 'Thats Right',
+                      ),
+                      Comment(
+                        avatarUrl: '',
+                        name: 'Diana',
+                        comment: 'Hahaa you so funny',
+                      ),
+                    ], 'Its So Nice', 'Max'));
               },
             ),
             SizedBox(height: 8.0),
@@ -90,7 +107,20 @@ class HomePage extends StatelessWidget {
             ),
           ],
               onPressedViewComments: () {
-                // TODO: Implement view comments functionality
+                Navigator.pushNamed(context,
+                    InfoPage.routeName,
+                    arguments: InfoArguments('https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/male/5.png', [
+                      Comment(
+                        avatarUrl: '',
+                        name: 'Ivan',
+                        comment: 'Congratulation!!',
+                      ),
+                      Comment(
+                        avatarUrl: '',
+                        name: 'Gilbert',
+                        comment: 'Oh My God',
+                      ),
+                    ], 'Yeah I pass', 'Linda'));
               },
             ),
           ],
@@ -129,71 +159,92 @@ class PostItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.blue),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 20.0,
-                backgroundImage: NetworkImage(avatarUrl),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: onPressedViewComments,
+                    child: CircleAvatar(
+                      radius: 20.0,
+                      backgroundImage: NetworkImage(avatarUrl),
+                    ),
+                  ),
+                  SizedBox(width: 8.0),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(width: 8.0),
+              SizedBox(height: 8.0),
               Text(
-                name,
+                description,
                 style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
                 ),
               ),
+              SizedBox(height: 8.0),
+              ElevatedButton(
+                onPressed: () {},
+                child: Text('View Comments'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return Colors.blueAccent;
+                      }
+                      return Colors.blue;
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.0),
             ],
           ),
-          SizedBox(height: 8.0),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 14.0,
-            ),
-          ),
-          SizedBox(height: 8.0),
+        ),
 
-
-          ElevatedButton(
-            onPressed: onPressedViewComments,
-            child: Text('View Comments'),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return Colors.blue;
-                  }
-                  return Colors.blue[250]; // Use the component's default.
-                },
-              ),
+        Container(
+            padding: EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blue),
             ),
-          ),
-          SizedBox(height: 8.0),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: comments.length,
-            itemBuilder: (context, index) {
-              final comment = comments[index];
-              return CommentItem(
-                avatarUrl: comment.avatarUrl,
-                name: comment.name,
-                comment: comment.comment,
-              );
-            },
-          ),
-        ],
-      ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('comments',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: comments.length,
+                  itemBuilder: (context, index) {
+                    final comment = comments[index];
+                    return CommentItem(
+                      avatarUrl: comment.avatarUrl,
+                      name: comment.name,
+                      comment: comment.comment,
+                    );
+                  },
+                ),
+              ],
+            )
+        ),
+      ],
     );
   }
 }
@@ -250,6 +301,167 @@ class CommentItem extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class InfoArguments {
+  final String avatarUrl;
+  final List<Comment> comments;
+  final String name;
+  final String description;
+
+  InfoArguments(this.avatarUrl, this.comments, this.description, this.name);
+}
+//
+//
+class InfoPage extends StatelessWidget{
+  const InfoPage({super.key});
+  static const routeName = '/extractArguments';
+
+  @override
+  Widget build(BuildContext context) {
+    var args = InfoArguments('https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/female/10.png',
+        [], 'default', 'default');
+    args = ModalRoute.of(context)!.settings.arguments as InfoArguments;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(args.name + ' Info'),
+      ),
+      body: Container(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+            TextFormField(
+            decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search,
+              color: Colors.grey,
+              size: 26,
+            ),
+          )
+                ),
+                SizedBox(height: 8.0),
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20.0,
+                        backgroundImage: NetworkImage(args.avatarUrl),
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(args.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Bio', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 8.0),
+                      Text('', style: TextStyle(fontSize: 14.0)),
+                      Text('', style: TextStyle(fontSize: 14.0)),
+                      Text('', style: TextStyle(fontSize: 14.0)),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Friends', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 12.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 16.0),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                      SizedBox(width: 12.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('                              Load more', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold) ,),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Images', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 12.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 16.0),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                              SizedBox(width: 20.0),
+                              ReelItem(),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 12.0),
+                      Text('                              Load more', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold) ,),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                PostItem(
+                  avatarUrl: args.avatarUrl,
+                  name: args.name,
+                  comments: args.comments,
+                  description: args.description,
+                  onPressedViewComments: () {},
+                )
+              ],
+            ),
+          )
       ),
     );
   }
